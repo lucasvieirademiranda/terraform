@@ -9,14 +9,14 @@ resource "aws_kinesis_stream" "data_load_stream" {
 
   name = "data_load_stream"
 
-  shard_count = 1
+  shard_count = 10
 
   retention_period = 24
 
   encryption_type = "NONE"
 
   shard_level_metrics = [
-    "IncomingBytes",s
+    "IncomingBytes",
     "OutgoingBytes"
   ]
   
@@ -24,6 +24,12 @@ resource "aws_kinesis_stream" "data_load_stream" {
 
 resource "aws_s3_bucket" "raw_bucket" {
   bucket = "raw-picpay-test-123"
+  acl = "private"
+  force_destroy = true
+}
+
+resource "aws_s3_bucket" "cleaned_bucket" {
+  bucket = "cleaned-picpay-test-123"
   acl = "private"
   force_destroy = true
 }
@@ -65,6 +71,82 @@ resource "aws_kinesis_firehose_delivery_stream" "raw_stream" {
   depends_on = [
     aws_kinesis_stream.data_load_stream,
     aws_s3_bucket.raw_bucket
+  ]
+
+}
+
+resource "aws_lambda_function" "sanitize_lambda" {
+
+ function_name = "sanitize_lambda"
+ handler = "sanitize_lambda.handler"
+
+ filename = "sanitize_lambda.zip"
+ source_code_hash = filebase64sha256("sanitize_lambda.zip")
+ runtime = "python3.7"
+
+ role = aws_iam_role.sanitize_lambda_role.arn
+
+ depends_on = [
+   aws_kinesis_stream.data_load_stream
+ ]
+
+}
+
+resource "aws_cloudwatch_log_group" "cleaned_stream_log_group" {
+  name = "cleaned_stream_log_group"
+}
+
+resource "aws_cloudwatch_log_stream" "cleaned_stream_log_stream" {
+  name = "cleaned_stream_log_stream"
+  log_group_name = aws_cloudwatch_log_group.cleaned_stream_log_group.name
+}
+
+resource "aws_kinesis_firehose_delivery_stream" "cleaned_stream" {
+  
+  name = "cleaned_stream"
+  destination = "extended_s3"
+
+  kinesis_source_configuration {
+    kinesis_stream_arn = aws_kinesis_stream.data_load_stream.arn
+    role_arn = aws_iam_role.cleaned_firehose_role.arn
+  }
+
+  extended_s3_configuration  {
+
+    role_arn = aws_iam_role.cleaned_firehose_role.arn
+    bucket_arn = aws_s3_bucket.cleaned_bucket.arn
+    buffer_size = 1
+    buffer_interval = 60
+
+    processing_configuration {
+
+      enabled = true
+
+      processors {
+
+        type = "Lambda"
+
+        parameters {
+          parameter_name = "LambdaArn"
+          parameter_value = aws_lambda_function.sanitize_lambda.arn
+        }
+
+      }
+
+    }
+
+    cloudwatch_logging_options {
+      enabled = true
+      log_group_name = aws_cloudwatch_log_group.cleaned_stream_log_group.name
+      log_stream_name = aws_cloudwatch_log_stream.cleaned_stream_log_stream.name
+    }
+
+  }
+
+  depends_on = [
+    aws_kinesis_stream.data_load_stream,
+    aws_s3_bucket.cleaned_bucket,
+    aws_lambda_function.sanitize_lambda
   ]
 
 }
