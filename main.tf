@@ -75,13 +75,19 @@ resource "aws_kinesis_firehose_delivery_stream" "raw_stream" {
 
 }
 
+data "archive_file" "sanitize_lambda_zip" {
+  type = "zip"
+  source_dir = "sanitize_lambda"
+  output_path = "sanitize_lambda.zip"
+}
+
 resource "aws_lambda_function" "sanitize_lambda" {
 
  function_name = "sanitize_lambda"
  handler = "sanitize_lambda.handler"
 
  filename = "sanitize_lambda.zip"
- source_code_hash = filebase64sha256("sanitize_lambda.zip")
+ source_code_hash = data.archive_file.sanitize_lambda_zip.output_base64sha256
  runtime = "python3.7"
 
  role = aws_iam_role.sanitize_lambda_role.arn
@@ -151,13 +157,19 @@ resource "aws_kinesis_firehose_delivery_stream" "cleaned_stream" {
 
 }
 
+data "archive_file" "data_load_lambda_zip" {
+  type = "zip"
+  source_dir = "data_load_lambda"
+  output_path = "data_load_lambda.zip"
+}
+
 resource "aws_lambda_function" "data_load_lambda" {
 
  function_name = "data_load_lambda"
  handler = "data_load_lambda.handler"
 
  filename = "data_load_lambda.zip"
- source_code_hash = filebase64sha256("data_load_lambda.zip")
+ source_code_hash = data.archive_file.data_load_lambda_zip.output_base64sha256
  runtime = "python3.7"
 
  role = aws_iam_role.data_load_lambda_role.arn
