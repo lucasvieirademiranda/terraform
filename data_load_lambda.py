@@ -16,12 +16,15 @@ def handler(event, context):
         if (response.status != 200):
             raise Exception('Status should be 200.')
 
-        result = response.data.decode("utf-8")
+        data = json.loads(response.data.decode("utf-8"))[0]
+
+        result = json.dumps(data)
 
         client = boto3.client("kinesis")
 
         output = client.put_record(StreamName = stream_name, Data = result, PartitionKey = "partitionKey")
 
+        print(result)
         print("SUCCESS")
         
     except Exception as e:
