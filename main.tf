@@ -10,7 +10,7 @@ resource "aws_kinesis_stream" "data_load_stream" {
 
   name = "data_load_stream"
 
-  shard_count = 10
+  shard_count = 1
 
   retention_period = 24
 
@@ -187,8 +187,24 @@ resource "aws_glue_crawler" "glue_csv_crawler" {
 	// https://docs.aws.amazon.com/glue/latest/dg/monitor-data-warehouse-schedule.html
 	//schedule = "cron(*/5 * * * ? *)"
 
+	configuration = jsonencode({
+		Version = 1
+		CrawlerOutput = {
+			Partitions = { AddOrUpdateBehavior = "InheritFromTable" }
+		}
+	})
+
 	s3_target {
 		path = "s3://${aws_s3_bucket.cleaned_bucket.bucket}/cleaned"
+	}
+
+	schema_change_policy {
+		delete_behavior = "DEPRECATE_IN_DATABASE"
+		update_behavior = "LOG"
+	}
+	
+	recrawl_policy {
+		recrawl_behavior = "CRAWL_EVERYTHING"
 	}
 
 }
