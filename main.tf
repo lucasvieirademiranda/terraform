@@ -59,8 +59,8 @@ resource "aws_kinesis_firehose_delivery_stream" "raw_stream" {
     role_arn = aws_iam_role.raw_firehose_role.arn
     bucket_arn = aws_s3_bucket.raw_bucket.arn
 	prefix = "raw/"
-    buffer_size = 5
-    buffer_interval = 300
+    buffer_size = 1
+    buffer_interval = 60
 
     cloudwatch_logging_options {
       enabled = true
@@ -124,8 +124,8 @@ resource "aws_kinesis_firehose_delivery_stream" "cleaned_stream" {
 	role_arn = aws_iam_role.cleaned_firehose_role.arn
 	bucket_arn = aws_s3_bucket.cleaned_bucket.arn
 	prefix = "cleaned/"
-    buffer_size = 5
-    buffer_interval = 300
+    buffer_size = 1
+    buffer_interval = 60
 
 	processing_configuration {
 
@@ -185,7 +185,7 @@ resource "aws_glue_crawler" "glue_csv_crawler" {
 	classifiers = [ aws_glue_classifier.aws_glue_csv_classifier.name ]
 	role = aws_iam_role.glue_role.arn
 	// https://docs.aws.amazon.com/glue/latest/dg/monitor-data-warehouse-schedule.html
-	//schedule = "cron(*/5 * * * ? *)"
+	schedule = "cron(*/5 * * * ? *)"
 
 	configuration = jsonencode({
 		Version = 1
