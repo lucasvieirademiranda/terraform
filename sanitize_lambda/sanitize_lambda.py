@@ -17,7 +17,7 @@ def handler (event, context):
 
             data = json.loads(decodedString)
 
-            csv = "{id},{name},{abv},{ibu},{target_fg},{target_og},{ebc},{srm},{ph}".format(
+            csv = "{id},\"{name}\",{abv},{ibu},{target_fg},{target_og},{ebc},{srm},{ph}\n".format(
                 id = data['id'],
                 name = data['name'],
                 abv = data['abv'],

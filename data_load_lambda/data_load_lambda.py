@@ -18,11 +18,13 @@ def handler(event, context):
 
         data = json.loads(response.data.decode("utf-8"))[0]
 
+        partitionKey = data['first_brewed']
+
         result = json.dumps(data)
 
         client = boto3.client("kinesis")
 
-        output = client.put_record(StreamName = stream_name, Data = result, PartitionKey = "partitionKey")
+        output = client.put_record(StreamName = stream_name, Data = result, PartitionKey = partitionKey)
 
         print(result)
         print("SUCCESS")
