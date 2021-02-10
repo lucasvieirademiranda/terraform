@@ -185,7 +185,7 @@ resource "aws_glue_crawler" "glue_csv_crawler" {
 	classifiers = [ aws_glue_classifier.aws_glue_csv_classifier.name ]
 	role = aws_iam_role.glue_role.arn
 	// https://docs.aws.amazon.com/glue/latest/dg/monitor-data-warehouse-schedule.html
-	schedule = "cron(*/5 * * * ? *)"
+	// schedule = "cron(*/5 * * * ? *)"
 
 	configuration = jsonencode({
 		Version = 1
