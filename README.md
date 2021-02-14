@@ -6,7 +6,7 @@ Utiliza um CloudWatch que dispara a cada 5 minutos uma função lambda (data_loa
 
 Utiliza um Firehose (Raw Stream) agregando todas as entradas para guardar em um bucket S3 com o nome raw
 
-Utiliza um Firehose (Cleaned Stream) chamando a função lambda (sanitize_lambda.py) que pega somente os campos id, name, abv, ibu, target_fg, target_og, ebc, srm e ph das cervejas
+Utiliza um Firehose (Cleaned Stream) chamando a função lambda (sanitize_lambda.py) que pega somente os campos id, name, abv, ibu, target_fg, target_og, ebc, srm e ph das cervejas e os armazena em um bucket S3 com o nome cleaned
 
 # Executando #
 
