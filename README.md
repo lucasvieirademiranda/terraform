@@ -19,5 +19,5 @@ secret_key = "A0BPdvlxH9coMSBBQcGtzayoDO4Mh4W/atBCERvD2"
 
 Para incluir a sua chave do AWS.
 
-3º) Através da linha de comando, estando no diretório do projeto, execute:
+3º) Através da linha de comando, estando no diretório do projeto, execute:  
 terraform apply
