@@ -1,6 +1,6 @@
 # Implementação de Pipeline para Processamento de Dados no AWS #
 
-![alt text](https://github.com/lucasvieirademiranda/terraform/tree/main/images/archtecture.jpg)
+![ScreenShot](images/archtecture.jpg)
 
 Utiliza um CloudWatch que dispara a cada 5 minutos uma função lambda (data_load_lambda.py) que coleta dados da [PUNK API](https://api.punkapi.com/v2/beers/random) para alimentar um Kinesis Stream
 
@@ -14,7 +14,7 @@ Utiliza um Firehose (Cleaned Stream) chamando a função lambda (sanitize_lambda
 
 2º) Abra o arquivo main.tf presente no diretório do projeto, e altere as linhas:
 
-access_key = "AKIAJS6TJ7SSUFHWAQOGA"
+access_key = "AKIAJS6TJ7SSUFHWAQOGA"  
 secret_key = "A0BPdvlxH9coMSBBQcGtzayoDO4Mh4W/atBCERvD2"
 
 Para incluir a sua chave do AWS.
