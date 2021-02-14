@@ -21,3 +21,5 @@ Para incluir a sua chave do AWS.
 
 3º) Através da linha de comando, estando no diretório do projeto, execute:  
 terraform apply
+
+4º) Acesse a aba de Crawlers no AWS Glue para executar o crawler manualmente, dessa forma será possível acessar os dados do bucket cleaned através do Athena e extraí-los no formato CSV
